@@ -1,0 +1,1017 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Касса Аэрофлота - Система управления расписанием</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background: linear-gradient(135deg, #1a2980, #26d0ce);
+            color: #333;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            background-color: rgba(255, 255, 255, 0.95);
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            overflow: hidden;
+        }
+
+        header {
+            background: linear-gradient(to right, #1a2980, #26d0ce);
+            color: white;
+            padding: 25px 40px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .logo i {
+            font-size: 2.5rem;
+        }
+
+        .logo-text h1 {
+            font-size: 1.8rem;
+            margin-bottom: 5px;
+        }
+
+        .logo-text p {
+            font-size: 0.9rem;
+            opacity: 0.9;
+        }
+
+        .user-menu {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .user-info {
+            text-align: right;
+        }
+
+        .user-info span {
+            font-weight: 600;
+        }
+
+        main {
+            display: flex;
+            min-height: 700px;
+        }
+
+        .sidebar {
+            width: 250px;
+            background-color: #f5f9ff;
+            padding: 25px 20px;
+            border-right: 1px solid #e1e8ff;
+        }
+
+        .nav-menu {
+            list-style: none;
+            margin-bottom: 40px;
+        }
+
+        .nav-item {
+            margin-bottom: 10px;
+        }
+
+        .nav-item a {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px 15px;
+            color: #1a2980;
+            text-decoration: none;
+            border-radius: 8px;
+            transition: all 0.3s;
+            font-weight: 500;
+        }
+
+        .nav-item a:hover, .nav-item.active a {
+            background-color: #1a2980;
+            color: white;
+        }
+
+        .system-status {
+            background-color: white;
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+        }
+
+        .status-title {
+            font-weight: 600;
+            margin-bottom: 15px;
+            color: #1a2980;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .status-item {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 10px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid #eee;
+        }
+
+        .content {
+            flex: 1;
+            padding: 30px;
+        }
+
+        .section-title {
+            font-size: 1.5rem;
+            color: #1a2980;
+            margin-bottom: 25px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #e1e8ff;
+        }
+
+        .controls {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 25px;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+
+        .btn {
+            padding: 10px 20px;
+            border-radius: 8px;
+            border: none;
+            cursor: pointer;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.3s;
+        }
+
+        .btn-primary {
+            background-color: #1a2980;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background-color: #152068;
+            transform: translateY(-2px);
+        }
+
+        .btn-secondary {
+            background-color: #26d0ce;
+            color: white;
+        }
+
+        .btn-secondary:hover {
+            background-color: #1fb3b1;
+            transform: translateY(-2px);
+        }
+
+        .search-sort {
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+
+        .search-box, .sort-box {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .search-input, .sort-select {
+            padding: 10px 15px;
+            border-radius: 8px;
+            border: 1px solid #ccc;
+            font-size: 0.9rem;
+        }
+
+        .search-input:focus, .sort-select:focus {
+            outline: none;
+            border-color: #1a2980;
+        }
+
+        .flights-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 30px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+            border-radius: 10px;
+            overflow: hidden;
+        }
+
+        .flights-table thead {
+            background-color: #1a2980;
+            color: white;
+        }
+
+        .flights-table th {
+            padding: 15px;
+            text-align: left;
+            font-weight: 600;
+        }
+
+        .flights-table tbody tr {
+            border-bottom: 1px solid #e1e8ff;
+            transition: background-color 0.2s;
+        }
+
+        .flights-table tbody tr:hover {
+            background-color: #f5f9ff;
+        }
+
+        .flights-table td {
+            padding: 15px;
+        }
+
+        .flight-number {
+            font-weight: 600;
+            color: #1a2980;
+        }
+
+        .free-seats {
+            display: inline-block;
+            padding: 5px 10px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 600;
+        }
+
+        .seats-available {
+            background-color: #d4edda;
+            color: #155724;
+        }
+
+        .seats-low {
+            background-color: #fff3cd;
+            color: #856404;
+        }
+
+        .seats-none {
+            background-color: #f8d7da;
+            color: #721c24;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .modal-content {
+            background-color: white;
+            width: 90%;
+            max-width: 800px;
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.2);
+        }
+
+        .modal-header {
+            background: linear-gradient(to right, #1a2980, #26d0ce);
+            color: white;
+            padding: 20px 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .modal-body {
+            padding: 30px;
+            max-height: 70vh;
+            overflow-y: auto;
+        }
+
+        .close-modal {
+            background: none;
+            border: none;
+            color: white;
+            font-size: 1.5rem;
+            cursor: pointer;
+        }
+
+        .form-row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+
+        .form-group {
+            flex: 1;
+            min-width: 250px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #1a2980;
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 10px 15px;
+            border-radius: 8px;
+            border: 1px solid #ccc;
+            font-size: 0.95rem;
+        }
+
+        .form-control:focus {
+            outline: none;
+            border-color: #1a2980;
+        }
+
+        .boarding-list {
+            background-color: white;
+            border-radius: 10px;
+            padding: 25px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+            margin-bottom: 30px;
+        }
+
+        .boarding-header {
+            text-align: center;
+            margin-bottom: 25px;
+            border-bottom: 2px solid #1a2980;
+            padding-bottom: 15px;
+        }
+
+        .boarding-details {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 20px;
+            margin-bottom: 25px;
+        }
+
+        .detail-item {
+            background-color: #f5f9ff;
+            padding: 15px;
+            border-radius: 8px;
+        }
+
+        .detail-label {
+            font-weight: 600;
+            color: #1a2980;
+            margin-bottom: 5px;
+        }
+
+        .passenger-list {
+            margin-top: 20px;
+        }
+
+        .passenger-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 12px 15px;
+            border-bottom: 1px solid #e1e8ff;
+        }
+
+        .passenger-item:last-child {
+            border-bottom: none;
+        }
+
+        .footer {
+            text-align: center;
+            padding: 20px;
+            background-color: #f5f9ff;
+            color: #666;
+            font-size: 0.9rem;
+            border-top: 1px solid #e1e8ff;
+        }
+
+        @media (max-width: 992px) {
+            main {
+                flex-direction: column;
+            }
+
+            .sidebar {
+                width: 100%;
+                border-right: none;
+                border-bottom: 1px solid #e1e8ff;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .controls {
+                flex-direction: column;
+            }
+
+            .search-sort {
+                flex-direction: column;
+            }
+
+            .flights-table {
+                display: block;
+                overflow-x: auto;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <div class="logo">
+                <i class="fas fa-plane"></i>
+                <div class="logo-text">
+                    <h1>Касса Аэрофлота</h1>
+                    <p>Информационно-поисковая система расписания рейсов</p>
+                </div>
+            </div>
+            <div class="user-menu">
+                <div class="user-info">
+                    <p>Оператор: <span>Иванова А.П.</span></p>
+                    <p>Дата: <span id="current-date">15.10.2023</span></p>
+                </div>
+                <i class="fas fa-user-circle" style="font-size: 2.5rem;"></i>
+            </div>
+        </header>
+
+        <main>
+            <aside class="sidebar">
+                <ul class="nav-menu">
+                    <li class="nav-item active"><a href="#"><i class="fas fa-home"></i> Главная</a></li>
+                    <li class="nav-item"><a href="#" id="menu-schedule"><i class="fas fa-calendar-alt"></i> Расписание рейсов</a></li>
+                    <li class="nav-item"><a href="#" id="menu-add"><i class="fas fa-plus-circle"></i> Добавить рейс</a></li>
+                    <li class="nav-item"><a href="#" id="menu-boarding"><i class="fas fa-clipboard-list"></i> Посадочная ведомость</a></li>
+                    <li class="nav-item"><a href="#" id="menu-guide"><i class="fas fa-book"></i> Руководство пользователя</a></li>
+                </ul>
+
+                <div class="system-status">
+                    <div class="status-title">
+                        <i class="fas fa-chart-line"></i>
+                        Статистика системы
+                    </div>
+                    <div class="status-item">
+                        <span>Всего рейсов:</span>
+                        <span id="total-flights">12</span>
+                    </div>
+                    <div class="status-item">
+                        <span>Свободных мест:</span>
+                        <span id="total-seats">148</span>
+                    </div>
+                    <div class="status-item">
+                        <span>Рейсов сегодня:</span>
+                        <span id="today-flights">3</span>
+                    </div>
+                </div>
+            </aside>
+
+            <section class="content">
+                <h2 class="section-title"><i class="fas fa-plane-departure"></i> Расписание рейсов Аэрофлота</h2>
+
+                <div class="controls">
+                    <div class="buttons">
+                        <button class="btn btn-primary" id="add-flight-btn">
+                            <i class="fas fa-plus"></i> Добавить рейс
+                        </button>
+                        <button class="btn btn-secondary" id="generate-boarding-btn">
+                            <i class="fas fa-file-alt"></i> Посадочная ведомость
+                        </button>
+                    </div>
+
+                    <div class="search-sort">
+                        <div class="search-box">
+                            <input type="text" class="search-input" id="search-input" placeholder="Поиск по номеру рейса...">
+                            <button class="btn btn-primary" id="search-btn">
+                                <i class="fas fa-search"></i>
+                            </button>
+                        </div>
+
+                        <div class="sort-box">
+                            <select class="sort-select" id="sort-select">
+                                <option value="">Сортировка...</option>
+                                <option value="route">По маршруту</option>
+                                <option value="price">По цене</option>
+                            </select>
+                            <button class="btn btn-primary" id="sort-btn">
+                                <i class="fas fa-sort-amount-down"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <table class="flights-table">
+                    <thead>
+                        <tr>
+                            <th>Номер рейса</th>
+                            <th>Маршрут</th>
+                            <th>Промежуточные посадки</th>
+                            <th>Время отправления</th>
+                            <th>Дни вылета</th>
+                            <th>Цена</th>
+                            <th>Свободные места</th>
+                            <th>Действия</th>
+                        </tr>
+                    </thead>
+                    <tbody id="flights-tbody">
+                        <!-- Данные будут загружены через JavaScript -->
+                    </tbody>
+                </table>
+
+                <div class="boarding-list" id="boarding-list" style="display: none;">
+                    <div class="boarding-header">
+                        <h2><i class="fas fa-clipboard-check"></i> Посадочная ведомость</h2>
+                        <p>Рейс SU-1456: Москва (Шереметьево) → Сочи (Адлер)</p>
+                    </div>
+
+                    <div class="boarding-details">
+                        <div class="detail-item">
+                            <div class="detail-label">Номер рейса</div>
+                            <div>SU-1456</div>
+                        </div>
+                        <div class="detail-item">
+                            <div class="detail-label">Маршрут</div>
+                            <div>Москва (Шереметьево) → Сочи (Адлер)</div>
+                        </div>
+                        <div class="detail-item">
+                            <div class="detail-label">Дата и время вылета</div>
+                            <div>15.10.2023, 08:30</div>
+                        </div>
+                        <div class="detail-item">
+                            <div class="detail-label">Количество пассажиров</div>
+                            <div>124</div>
+                        </div>
+                    </div>
+
+                    <h3 style="margin-bottom: 15px;">Список пассажиров</h3>
+                    <div class="passenger-list">
+                        <div class="passenger-item">
+                            <span>Иванов Иван Иванович</span>
+                            <span>Место: 12A</span>
+                        </div>
+                        <div class="passenger-item">
+                            <span>Петрова Анна Сергеевна</span>
+                            <span>Место: 12B</span>
+                        </div>
+                        <div class="passenger-item">
+                            <span>Сидоров Петр Васильевич</span>
+                            <span>Место: 14C</span>
+                        </div>
+                        <!-- Остальные пассажиры -->
+                    </div>
+
+                    <div style="text-align: center; margin-top: 25px;">
+                        <button class="btn btn-primary" id="print-boarding-btn">
+                            <i class="fas fa-print"></i> Распечатать ведомость
+                        </button>
+                    </div>
+                </div>
+
+                <div id="user-guide" style="display: none;">
+                    <h2 class="section-title"><i class="fas fa-book"></i> Руководство пользователя</h2>
+                    <div class="boarding-list">
+                        <h3>1. Общее описание системы</h3>
+                        <p>Информационно-поисковая система "Касса Аэрофлота" предназначена для управления расписанием рейсов, поиска информации о рейсах и формирования посадочных ведомостей.</p>
+
+                        <h3>2. Основные функции</h3>
+                        <ul style="margin-left: 20px; margin-bottom: 20px;">
+                            <li><strong>Добавление и редактирование рейсов</strong> - используйте кнопку "Добавить рейс" для внесения новой информации в базу данных.</li>
+                            <li><strong>Поиск рейсов</strong> - введите номер рейса или время отправления в поле поиска.</li>
+                            <li><strong>Сортировка</strong> - используйте выпадающий список для сортировки по маршруту или цене.</li>
+                            <li><strong>Формирование посадочной ведомости</strong> - нажмите на кнопку "Посадочная ведомость" для выбранного рейса.</li>
+                        </ul>
+
+                        <h3>3. Работа с расписанием</h3>
+                        <p>В таблице отображается текущее расписание всех рейсов. Вы можете редактировать или удалить любой рейс, нажав на соответствующие кнопки в столбце "Действия".</p>
+
+                        <h3>4. Контакты поддержки</h3>
+                        <p>По вопросам работы системы обращайтесь в отдел IT-поддержки Аэрофлота: support@aeroflot.ru, тел. +7 (495) 123-45-67.</p>
+                    </div>
+                </div>
+            </section>
+        </main>
+
+        <footer class="footer">
+            <p>© 2023 Касса Аэрофлота. Информационно-поисковая система. Все права защищены.</p>
+            <p>Версия системы: 2.1.4 | Последнее обновление: 15.10.2023</p>
+        </footer>
+    </div>
+
+    <!-- Модальное окно для добавления/редактирования рейса -->
+    <div class="modal" id="flight-modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 id="modal-title">Добавление нового рейса</h2>
+                <button class="close-modal" id="close-modal">&times;</button>
+            </div>
+            <div class="modal-body">
+                <form id="flight-form">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="flight-number">Номер рейса *</label>
+                            <input type="text" class="form-control" id="flight-number" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="route">Маршрут *</label>
+                            <input type="text" class="form-control" id="route" placeholder="Москва → Сочи" required>
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="stops">Пункты промежуточной посадки</label>
+                            <input type="text" class="form-control" id="stops" placeholder="Воронеж, Ростов-на-Дону">
+                        </div>
+                        <div class="form-group">
+                            <label for="departure-time">Время отправления *</label>
+                            <input type="time" class="form-control" id="departure-time" required>
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="days">Дни вылета *</label>
+                            <select class="form-control" id="days" multiple required>
+                                <option value="Пн">Понедельник</option>
+                                <option value="Вт">Вторник</option>
+                                <option value="Ср">Среда</option>
+                                <option value="Чт">Четверг</option>
+                                <option value="Пт">Пятница</option>
+                                <option value="Сб">Суббота</option>
+                                <option value="Вс">Воскресенье</option>
+                            </select>
+                            <small>Удерживайте Ctrl для выбора нескольких дней</small>
+                        </div>
+                        <div class="form-group">
+                            <label for="price">Запрашиваемая цена (руб) *</label>
+                            <input type="number" class="form-control" id="price" min="0" step="100" required>
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="seats">Количество свободных мест *</label>
+                            <input type="number" class="form-control" id="seats" min="0" max="300" required>
+                        </div>
+                    </div>
+
+                    <div style="text-align: center; margin-top: 30px;">
+                        <button type="submit" class="btn btn-primary" style="padding: 12px 30px;">
+                            <i class="fas fa-save"></i> Сохранить рейс
+                        </button>
+                        <button type="button" class="btn btn-secondary" id="cancel-modal" style="padding: 12px 30px; margin-left: 15px;">
+                            <i class="fas fa-times"></i> Отмена
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Инициализация данных
+        let flights = [
+            {
+                id: 1,
+                number: "SU-1456",
+                route: "Москва (Шереметьево) → Сочи (Адлер)",
+                stops: "Воронеж",
+                departure: "08:30",
+                days: ["Пн", "Ср", "Пт", "Вс"],
+                price: 8500,
+                seats: 12
+            },
+            {
+                id: 2,
+                number: "SU-1789",
+                route: "Санкт-Петербург (Пулково) → Новосибирск (Толмачево)",
+                stops: "Екатеринбург, Омск",
+                departure: "14:20",
+                days: ["Вт", "Чт", "Сб"],
+                price: 12500,
+                seats: 24
+            },
+            {
+                id: 3,
+                number: "SU-1123",
+                route: "Казань → Краснодар",
+                stops: "Ростов-на-Дону",
+                departure: "11:45",
+                days: ["Пн", "Вт", "Ср", "Чт", "Пт", "Сб", "Вс"],
+                price: 6800,
+                seats: 5
+            },
+            {
+                id: 4,
+                number: "SU-1567",
+                route: "Москва (Домодедово) → Владивосток",
+                stops: "Новосибирск, Иркутск, Хабаровск",
+                departure: "22:10",
+                days: ["Пн", "Чт", "Сб"],
+                price: 24500,
+                seats: 38
+            },
+            {
+                id: 5,
+                number: "SU-1345",
+                route: "Сочи (Адлер) → Калининград",
+                stops: "Москва (Шереметьево)",
+                departure: "09:15",
+                days: ["Вт", "Пт", "Вс"],
+                price: 11500,
+                seats: 0
+            },
+            {
+                id: 6,
+                number: "SU-1890",
+                route: "Екатеринбург (Кольцово) → Минск",
+                stops: "Москва (Домодедово)",
+                departure: "16:40",
+                days: ["Ср", "Чт", "Сб"],
+                price: 9200,
+                seats: 17
+            }
+        ];
+
+        let editingFlightId = null;
+
+        // Установка текущей даты
+        document.getElementById('current-date').textContent = new Date().toLocaleDateString('ru-RU');
+
+        // Заполнение таблицы рейсами
+        function renderFlights() {
+            const tbody = document.getElementById('flights-tbody');
+            tbody.innerHTML = '';
+
+            let totalSeats = 0;
+
+            flights.forEach(flight => {
+                totalSeats += flight.seats;
+
+                // Определение класса для отображения свободных мест
+                let seatsClass = 'seats-available';
+                if (flight.seats === 0) {
+                    seatsClass = 'seats-none';
+                } else if (flight.seats < 10) {
+                    seatsClass = 'seats-low';
+                }
+
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td class="flight-number">${flight.number}</td>
+                    <td>${flight.route}</td>
+                    <td>${flight.stops || '-'}</td>
+                    <td>${flight.departure}</td>
+                    <td>${flight.days.join(', ')}</td>
+                    <td>${flight.price.toLocaleString('ru-RU')} руб.</td>
+                    <td><span class="free-seats ${seatsClass}">${flight.seats} мест</span></td>
+                    <td>
+                        <button class="btn btn-primary" onclick="editFlight(${flight.id})" style="padding: 5px 10px; font-size: 0.8rem;">
+                            <i class="fas fa-edit"></i>
+                        </button>
+                        <button class="btn btn-secondary" onclick="deleteFlight(${flight.id})" style="padding: 5px 10px; font-size: 0.8rem; margin-left: 5px;">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                    </td>
+                `;
+                tbody.appendChild(row);
+            });
+
+            // Обновление статистики
+            document.getElementById('total-flights').textContent = flights.length;
+            document.getElementById('total-seats').textContent = totalSeats;
+
+            // Подсчет рейсов на сегодня (для примера)
+            const todayFlights = flights.filter(f => f.days.includes(getCurrentDayShort())).length;
+            document.getElementById('today-flights').textContent = todayFlights;
+        }
+
+        // Получение сокращенного названия текущего дня
+        function getCurrentDayShort() {
+            const days = ['Вс', 'Пн', 'Вт', 'Ср', 'Чт', 'Пт', 'Сб'];
+            const today = new Date().getDay();
+            return days[today];
+        }
+
+        // Поиск рейса по номеру
+        function searchFlights() {
+            const searchInput = document.getElementById('search-input').value.toLowerCase();
+            const filteredFlights = flights.filter(flight =>
+                flight.number.toLowerCase().includes(searchInput) ||
+                flight.departure.includes(searchInput)
+            );
+
+            if (filteredFlights.length === 0 && searchInput !== '') {
+                alert('Рейсы по указанному запросу не найдены');
+                return;
+            }
+
+            // Временно заменяем массив рейсов для отображения
+            const originalFlights = [...flights];
+            flights = searchInput === '' ? originalFlights : filteredFlights;
+            renderFlights();
+            flights = originalFlights; // Восстанавливаем исходный массив
+        }
+
+        // Сортировка рейсов
+        function sortFlights() {
+            const sortBy = document.getElementById('sort-select').value;
+
+            if (sortBy === 'route') {
+                flights.sort((a, b) => a.route.localeCompare(b.route));
+            } else if (sortBy === 'price') {
+                flights.sort((a, b) => a.price - b.price);
+            }
+
+            renderFlights();
+        }
+
+        // Открытие модального окна для добавления рейса
+        function openAddModal() {
+            editingFlightId = null;
+            document.getElementById('modal-title').textContent = 'Добавление нового рейса';
+            document.getElementById('flight-form').reset();
+            document.getElementById('flight-modal').style.display = 'flex';
+        }
+
+        // Открытие модального окна для редактирования рейса
+        function editFlight(id) {
+            const flight = flights.find(f => f.id === id);
+            if (!flight) return;
+
+            editingFlightId = id;
+            document.getElementById('modal-title').textContent = 'Редактирование рейса';
+
+            // Заполнение формы данными рейса
+            document.getElementById('flight-number').value = flight.number;
+            document.getElementById('route').value = flight.route;
+            document.getElementById('stops').value = flight.stops || '';
+            document.getElementById('departure-time').value = flight.departure;
+            document.getElementById('price').value = flight.price;
+            document.getElementById('seats').value = flight.seats;
+
+            // Установка выбранных дней
+            const daysSelect = document.getElementById('days');
+            Array.from(daysSelect.options).forEach(option => {
+                option.selected = flight.days.includes(option.value);
+            });
+
+            document.getElementById('flight-modal').style.display = 'flex';
+        }
+
+        // Удаление рейса
+        function deleteFlight(id) {
+            if (confirm('Вы уверены, что хотите удалить этот рейс?')) {
+                flights = flights.filter(f => f.id !== id);
+                renderFlights();
+            }
+        }
+
+        // Сохранение рейса (добавление или обновление)
+        function saveFlight(event) {
+            event.preventDefault();
+
+            // Получение данных из формы
+            const flightData = {
+                id: editingFlightId || flights.length > 0 ? Math.max(...flights.map(f => f.id)) + 1 : 1,
+                number: document.getElementById('flight-number').value,
+                route: document.getElementById('route').value,
+                stops: document.getElementById('stops').value,
+                departure: document.getElementById('departure-time').value,
+                days: Array.from(document.getElementById('days').selectedOptions).map(opt => opt.value),
+                price: parseInt(document.getElementById('price').value),
+                seats: parseInt(document.getElementById('seats').value)
+            };
+
+            // Проверка выбора дней
+            if (flightData.days.length === 0) {
+                alert('Пожалуйста, выберите хотя бы один день вылета');
+                return;
+            }
+
+            // Добавление или обновление рейса
+            if (editingFlightId) {
+                const index = flights.findIndex(f => f.id === editingFlightId);
+                flights[index] = flightData;
+            } else {
+                flights.push(flightData);
+            }
+
+            // Закрытие модального окна и обновление таблицы
+            closeModal();
+            renderFlights();
+        }
+
+        // Закрытие модального окна
+        function closeModal() {
+            document.getElementById('flight-modal').style.display = 'none';
+        }
+
+        // Показать/скрыть посадочную ведомость
+        function toggleBoardingList() {
+            const boardingList = document.getElementById('boarding-list');
+            const userGuide = document.getElementById('user-guide');
+            const flightsTable = document.querySelector('.flights-table');
+            const controls = document.querySelector('.controls');
+
+            if (boardingList.style.display === 'none') {
+                boardingList.style.display = 'block';
+                userGuide.style.display = 'none';
+                flightsTable.style.display = 'none';
+                controls.style.display = 'none';
+                document.querySelector('.section-title').innerHTML = '<i class="fas fa-clipboard-check"></i> Посадочная ведомость';
+            } else {
+                boardingList.style.display = 'none';
+                flightsTable.style.display = 'table';
+                controls.style.display = 'flex';
+                document.querySelector('.section-title').innerHTML = '<i class="fas fa-plane-departure"></i> Расписание рейсов Аэрофлота';
+            }
+        }
+
+        // Показать руководство пользователя
+        function showUserGuide() {
+            const boardingList = document.getElementById('boarding-list');
+            const userGuide = document.getElementById('user-guide');
+            const flightsTable = document.querySelector('.flights-table');
+            const controls = document.querySelector('.controls');
+
+            userGuide.style.display = 'block';
+            boardingList.style.display = 'none';
+            flightsTable.style.display = 'none';
+            controls.style.display = 'none';
+            document.querySelector('.section-title').innerHTML = '<i class="fas fa-book"></i> Руководство пользователя';
+        }
+
+        // Вернуться к расписанию
+        function showSchedule() {
+            const boardingList = document.getElementById('boarding-list');
+            const userGuide = document.getElementById('user-guide');
+            const flightsTable = document.querySelector('.flights-table');
+            const controls = document.querySelector('.controls');
+
+            userGuide.style.display = 'none';
+            boardingList.style.display = 'none';
+            flightsTable.style.display = 'table';
+            controls.style.display = 'flex';
+            document.querySelector('.section-title').innerHTML = '<i class="fas fa-plane-departure"></i> Расписание рейсов Аэрофлота';
+        }
+
+        // Инициализация при загрузке страницы
+        document.addEventListener('DOMContentLoaded', () => {
+            renderFlights();
+
+            // Назначение обработчиков событий
+            document.getElementById('add-flight-btn').addEventListener('click', openAddModal);
+            document.getElementById('search-btn').addEventListener('click', searchFlights);
+            document.getElementById('sort-btn').addEventListener('click', sortFlights);
+            document.getElementById('generate-boarding-btn').addEventListener('click', toggleBoardingList);
+            document.getElementById('print-boarding-btn').addEventListener('click', () => alert('Посадочная ведомость отправлена на печать'));
+
+            document.getElementById('menu-schedule').addEventListener('click', showSchedule);
+            document.getElementById('menu-add').addEventListener('click', openAddModal);
+            document.getElementById('menu-boarding').addEventListener('click', toggleBoardingList);
+            document.getElementById('menu-guide').addEventListener('click', showUserGuide);
+
+            document.getElementById('flight-form').addEventListener('submit', saveFlight);
+            document.getElementById('close-modal').addEventListener('click', closeModal);
+            document.getElementById('cancel-modal').addEventListener('click', closeModal);
+
+            // Поиск при нажатии Enter
+            document.getElementById('search-input').addEventListener('keypress', (e) => {
+                if (e.key === 'Enter') {
+                    searchFlights();
+                }
+            });
+
+            // Закрытие модального окна при клике вне его
+            window.addEventListener('click', (e) => {
+                const modal = document.getElementById('flight-modal');
+                if (e.target === modal) {
+                    closeModal();
+                }
+            });
+        });
+    </script>
+</body>
+</html>
