@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Касса Аэрофлота - Система управления расписанием</title>
+    <title>SkyFlight - Система управления авиабилетами</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         * {
@@ -27,6 +27,92 @@
             border-radius: 15px;
             box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
             overflow: hidden;
+        }
+        
+        /* Стили для окна входа */
+        .login-container {
+            max-width: 500px;
+            margin: 100px auto;
+            background-color: white;
+            border-radius: 15px;
+            padding: 40px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            text-align: center;
+        }
+        
+        .login-logo {
+            font-size: 3rem;
+            color: #1a2980;
+            margin-bottom: 20px;
+        }
+        
+        .login-title {
+            color: #1a2980;
+            margin-bottom: 30px;
+            font-size: 1.8rem;
+        }
+        
+        .login-form {
+            text-align: left;
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            color: #1a2980;
+            font-weight: 600;
+        }
+        
+        .form-control {
+            width: 100%;
+            padding: 12px 15px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            font-size: 1rem;
+        }
+        
+        .form-control:focus {
+            outline: none;
+            border-color: #1a2980;
+            box-shadow: 0 0 0 2px rgba(26, 41, 128, 0.2);
+        }
+        
+        .btn-login {
+            width: 100%;
+            padding: 14px;
+            background: linear-gradient(to right, #1a2980, #26d0ce);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            margin-top: 10px;
+        }
+        
+        .btn-login:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        }
+        
+        .login-hint {
+            margin-top: 20px;
+            font-size: 0.9rem;
+            color: #666;
+            background-color: #f5f9ff;
+            padding: 15px;
+            border-radius: 8px;
+            border-left: 4px solid #1a2980;
+        }
+        
+        /* Основные стили системы (скрыты до входа) */
+        .system-container {
+            display: none;
         }
         
         header {
@@ -70,6 +156,21 @@
         
         .user-info span {
             font-weight: 600;
+        }
+        
+        .logout-btn {
+            background: none;
+            border: 1px solid white;
+            color: white;
+            padding: 8px 15px;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .logout-btn:hover {
+            background-color: white;
+            color: #1a2980;
         }
         
         main {
@@ -150,6 +251,17 @@
             border-bottom: 2px solid #e1e8ff;
         }
         
+        .user-role-badge {
+            display: inline-block;
+            padding: 3px 10px;
+            background-color: #1a2980;
+            color: white;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            margin-left: 10px;
+            font-weight: 600;
+        }
+        
         .controls {
             display: flex;
             justify-content: space-between;
@@ -187,6 +299,16 @@
         
         .btn-secondary:hover {
             background-color: #1fb3b1;
+            transform: translateY(-2px);
+        }
+        
+        .btn-danger {
+            background-color: #dc3545;
+            color: white;
+        }
+        
+        .btn-danger:hover {
+            background-color: #c82333;
             transform: translateY(-2px);
         }
         
@@ -250,6 +372,12 @@
         .flight-number {
             font-weight: 600;
             color: #1a2980;
+        }
+        
+        .flight-duration {
+            font-size: 0.9rem;
+            color: #666;
+            font-style: italic;
         }
         
         .free-seats {
@@ -330,13 +458,6 @@
         .form-group {
             flex: 1;
             min-width: 250px;
-        }
-        
-        .form-group label {
-            display: block;
-            margin-bottom: 8px;
-            font-weight: 600;
-            color: #1a2980;
         }
         
         .form-control {
@@ -439,21 +560,50 @@
     </style>
 </head>
 <body>
-    <div class="container">
+    <!-- Окно входа -->
+    <div class="login-container" id="login-container">
+        <div class="login-logo">
+            <i class="fas fa-plane"></i>
+        </div>
+        <h1 class="login-title">SkyFlight Ticket System</h1>
+        <form id="login-form" class="login-form">
+            <div class="form-group">
+                <label for="username">Имя пользователя</label>
+                <input type="text" class="form-control" id="username" placeholder="Введите имя пользователя" required>
+            </div>
+            <div class="form-group">
+                <label for="password">Пароль</label>
+                <input type="password" class="form-control" id="password" placeholder="Введите пароль" required>
+            </div>
+            <button type="submit" class="btn-login">Войти в систему</button>
+        </form>
+        
+        <div class="login-hint">
+            <p><strong>Тестовые учетные записи:</strong></p>
+            <p>👨‍💼 <strong>Администратор:</strong> admin / admin123</p>
+            <p>👨‍💻 <strong>Оператор:</strong> Прохор / asdfgbnm4</p>
+            <p>👤 <strong>Пользователь:</strong> user / user123</p>
+        </div>
+    </div>
+    
+    <!-- Основная система (скрыта до входа) -->
+    <div class="container system-container" id="system-container">
         <header>
             <div class="logo">
                 <i class="fas fa-plane"></i>
                 <div class="logo-text">
-                    <h1>Касса Аэрофлота</h1>
+                    <h1>SkyFlight Tickets <span id="user-role-badge" class="user-role-badge"></span></h1>
                     <p>Информационно-поисковая система расписания рейсов</p>
                 </div>
             </div>
             <div class="user-menu">
                 <div class="user-info">
-                    <p>Оператор: <span>Иванова А.П.</span></p>
+                    <p>Пользователь: <span id="current-user"></span></p>
                     <p>Дата: <span id="current-date"></span></p>
                 </div>
-                <i class="fas fa-user-circle" style="font-size: 2.5rem;"></i>
+                <button class="logout-btn" id="logout-btn">
+                    <i class="fas fa-sign-out-alt"></i> Выйти
+                </button>
             </div>
         </header>
         
@@ -462,7 +612,7 @@
                 <ul class="nav-menu">
                     <li class="nav-item active"><a href="#"><i class="fas fa-home"></i> Главная</a></li>
                     <li class="nav-item"><a href="#" id="menu-schedule"><i class="fas fa-calendar-alt"></i> Расписание рейсов</a></li>
-                    <li class="nav-item"><a href="#" id="menu-add"><i class="fas fa-plus-circle"></i> Добавить рейс</a></li>
+                    <li class="nav-item admin-only"><a href="#" id="menu-add"><i class="fas fa-plus-circle"></i> Добавить рейс</a></li>
                     <li class="nav-item"><a href="#" id="menu-boarding"><i class="fas fa-clipboard-list"></i> Посадочная ведомость</a></li>
                     <li class="nav-item"><a href="#" id="menu-guide"><i class="fas fa-book"></i> Руководство пользователя</a></li>
                 </ul>
@@ -488,11 +638,11 @@
             </aside>
             
             <section class="content">
-                <h2 class="section-title"><i class="fas fa-plane-departure"></i> Расписание рейсов Аэрофлота</h2>
+                <h2 class="section-title"><i class="fas fa-plane-departure"></i> Расписание рейсов</h2>
                 
                 <div class="controls">
                     <div class="buttons">
-                        <button class="btn btn-primary" id="add-flight-btn">
+                        <button class="btn btn-primary admin-only" id="add-flight-btn">
                             <i class="fas fa-plus"></i> Добавить рейс
                         </button>
                         <button class="btn btn-secondary" id="generate-boarding-btn">
@@ -513,6 +663,7 @@
                                 <option value="">Сортировка...</option>
                                 <option value="route">По маршруту</option>
                                 <option value="price">По цене</option>
+                                <option value="duration">По времени в пути</option>
                             </select>
                             <button class="btn btn-primary" id="sort-btn">
                                 <i class="fas fa-sort-amount-down"></i>
@@ -528,6 +679,7 @@
                             <th>Маршрут</th>
                             <th>Промежуточные посадки</th>
                             <th>Время отправления</th>
+                            <th>Время в пути</th>
                             <th>Дни вылета</th>
                             <th>Цена</th>
                             <th>Свободные места</th>
@@ -557,6 +709,10 @@
                         <div class="detail-item">
                             <div class="detail-label">Дата и время вылета</div>
                             <div id="boarding-date-time"></div>
+                        </div>
+                        <div class="detail-item">
+                            <div class="detail-label">Время в пути</div>
+                            <div>2ч 30м</div>
                         </div>
                         <div class="detail-item">
                             <div class="detail-label">Количество пассажиров</div>
@@ -599,21 +755,25 @@
                     <h2 class="section-title"><i class="fas fa-book"></i> Руководство пользователя</h2>
                     <div class="boarding-list">
                         <h3>1. Общее описание системы</h3>
-                        <p>Информационно-поисковая система "Касса Аэрофлота" предназначена для управления расписанием рейсов, поиска информации о рейсах и формирования посадочных ведомостей.</p>
+                        <p>Информационно-поисковая система "SkyFlight Tickets" предназначена для управления расписанием рейсов, поиска информации о рейсах и формирования посадочных ведомостей.</p>
                         
-                        <h3>2. Основные функции</h3>
+                        <h3>2. Уровни доступа</h3>
                         <ul style="margin-left: 20px; margin-bottom: 20px;">
-                            <li><strong>Добавление и редактирование рейсов</strong> - используйте кнопку "Добавить рейс" для внесения новой информации в базу данных.</li>
-                            <li><strong>Поиск рейсов</strong> - введите номер рейса или время отправления в поле поиска.</li>
-                            <li><strong>Сортировка</strong> - используйте выпадающий список для сортировки по маршруту или цене.</li>
-                            <li><strong>Формирование посадочной ведомости</strong> - нажмите на кнопку "Посадочная ведомость" для выбранного рейса.</li>
+                            <li><strong>Администратор</strong> - полный доступ ко всем функциям</li>
+                            <li><strong>Оператор</strong> - может добавлять и редактировать рейсы</li>
+                            <li><strong>Пользователь</strong> - только просмотр расписания</li>
                         </ul>
                         
-                        <h3>3. Работа с расписанием</h3>
-                        <p>В таблице отображается текущее расписание всех рейсов. Вы можете редактировать или удалить любой рейс, нажав на соответствующие кнопки в столбце "Действия".</p>
+                        <h3>3. Основные функции</h3>
+                        <ul style="margin-left: 20px; margin-bottom: 20px;">
+                            <li><strong>Добавление и редактирование рейсов</strong> (только для администраторов и операторов)</li>
+                            <li><strong>Поиск рейсов</strong> - по номеру рейса или времени отправления</li>
+                            <li><strong>Сортировка</strong> - по маршруту, цене или времени в пути</li>
+                            <li><strong>Формирование посадочной ведомости</strong></li>
+                        </ul>
                         
                         <h3>4. Контакты поддержки</h3>
-                        <p>По вопросам работы системы обращайтесь в отдел IT-поддержки Аэрофлота: support@aeroflot.ru, тел. +7 (495) 123-45-67.</p>
+                        <p>По вопросам работы системы обращайтесь: support@skyflight.ru, тел. +7 (495) 123-45-67.</p>
                         
                         <div style="margin-top: 30px; padding: 15px; background-color: #f5f9ff; border-radius: 8px;">
                             <p><strong>Дата последнего обновления руководства:</strong> <span id="guide-update-date"></span></p>
@@ -624,7 +784,7 @@
         </main>
         
         <footer class="footer">
-            <p>© <span id="current-year"></span> Касса Аэрофлота. Информационно-поисковая система. Все права защищены.</p>
+            <p>© <span id="current-year"></span> SkyFlight Tickets. Информационно-поисковая система. Все права защищены.</p>
             <p>Версия системы: 2.1.4 | Последнее обновление: <span id="current-date-footer"></span></p>
         </footer>
     </div>
@@ -662,6 +822,10 @@
                     
                     <div class="form-row">
                         <div class="form-group">
+                            <label for="duration">Время в пути *</label>
+                            <input type="text" class="form-control" id="duration" placeholder="2ч 30м" value="2ч 30м" required>
+                        </div>
+                        <div class="form-group">
                             <label for="days">Дни вылета *</label>
                             <select class="form-control" id="days" multiple required>
                                 <option value="Пн">Понедельник</option>
@@ -674,13 +838,13 @@
                             </select>
                             <small>Удерживайте Ctrl для выбора нескольких дней</small>
                         </div>
+                    </div>
+                    
+                    <div class="form-row">
                         <div class="form-group">
                             <label for="price">Запрашиваемая цена (руб) *</label>
                             <input type="number" class="form-control" id="price" min="0" step="100" value="8500" required>
                         </div>
-                    </div>
-                    
-                    <div class="form-row">
                         <div class="form-group">
                             <label for="seats">Количество свободных мест *</label>
                             <input type="number" class="form-control" id="seats" min="0" max="300" value="12" required>
@@ -701,64 +865,80 @@
     </div>
 
     <script>
-        // Инициализация данных
+        // Данные пользователей
+        const users = {
+            'admin': { password: 'admin123', role: 'Администратор', name: 'Администратор' },
+            'Прохор': { password: 'asdfgbnm4', role: 'Оператор', name: 'Прохор Иванов' },
+            'user': { password: 'user123', role: 'Пользователь', name: 'Обычный пользователь' }
+        };
+        
+        // Текущий пользователь
+        let currentUser = null;
+        
+        // Инициализация данных рейсов с временем в пути
         let flights = [
             {
                 id: 1,
-                number: "SU-1456",
+                number: "SF-1456",
                 route: "Москва (Шереметьево) → Сочи (Адлер)",
                 stops: "Воронеж",
                 departure: "08:30",
+                duration: "2ч 30м",
                 days: ["Пн", "Ср", "Пт", "Вс"],
                 price: 8500,
                 seats: 12
             },
             {
                 id: 2,
-                number: "SU-1789",
+                number: "SF-1789",
                 route: "Санкт-Петербург (Пулково) → Новосибирск (Толмачево)",
                 stops: "Екатеринбург, Омск",
                 departure: "14:20",
+                duration: "4ч 15м",
                 days: ["Вт", "Чт", "Сб"],
                 price: 12500,
                 seats: 24
             },
             {
                 id: 3,
-                number: "SU-1123",
+                number: "SF-1123",
                 route: "Казань → Краснодар",
                 stops: "Ростов-на-Дону",
                 departure: "11:45",
+                duration: "2ч 55м",
                 days: ["Пн", "Вт", "Ср", "Чт", "Пт", "Сб", "Вс"],
                 price: 6800,
                 seats: 5
             },
             {
                 id: 4,
-                number: "SU-1567",
+                number: "SF-1567",
                 route: "Москва (Домодедово) → Владивосток",
                 stops: "Новосибирск, Иркутск, Хабаровск",
                 departure: "22:10",
+                duration: "8ч 45м",
                 days: ["Пн", "Чт", "Сб"],
                 price: 24500,
                 seats: 38
             },
             {
                 id: 5,
-                number: "SU-1345",
+                number: "SF-1345",
                 route: "Сочи (Адлер) → Калининград",
                 stops: "Москва (Шереметьево)",
                 departure: "09:15",
+                duration: "3ч 20м",
                 days: ["Вт", "Пт", "Вс"],
                 price: 11500,
                 seats: 0
             },
             {
                 id: 6,
-                number: "SU-1890",
+                number: "SF-1890",
                 route: "Екатеринбург (Кольцово) → Минск",
                 stops: "Москва (Домодедово)",
                 departure: "16:40",
+                duration: "3ч 50м",
                 days: ["Ср", "Чт", "Сб"],
                 price: 9200,
                 seats: 17
@@ -806,6 +986,59 @@
             document.getElementById('boarding-date-time').textContent = formatDateTime(tomorrow);
         }
         
+        // Функция входа в систему
+        function login(username, password) {
+            if (users[username] && users[username].password === password) {
+                currentUser = {
+                    username: username,
+                    role: users[username].role,
+                    name: users[username].name
+                };
+                
+                // Показываем систему, скрываем окно входа
+                document.getElementById('login-container').style.display = 'none';
+                document.getElementById('system-container').style.display = 'block';
+                
+                // Устанавливаем информацию о пользователе
+                document.getElementById('current-user').textContent = currentUser.name;
+                document.getElementById('user-role-badge').textContent = currentUser.role;
+                
+                // Управляем видимостью элементов в зависимости от роли
+                updateUIForUserRole();
+                
+                // Устанавливаем даты и рендерим рейсы
+                updateDates();
+                renderFlights();
+                
+                return true;
+            }
+            return false;
+        }
+        
+        // Функция выхода из системы
+        function logout() {
+            currentUser = null;
+            document.getElementById('login-container').style.display = 'block';
+            document.getElementById('system-container').style.display = 'none';
+            document.getElementById('login-form').reset();
+        }
+        
+        // Обновление интерфейса в зависимости от роли пользователя
+        function updateUIForUserRole() {
+            const isAdmin = currentUser.role === 'Администратор';
+            const isOperator = currentUser.role === 'Оператор' || isAdmin;
+            
+            // Показываем/скрываем элементы с классом admin-only
+            document.querySelectorAll('.admin-only').forEach(element => {
+                element.style.display = isOperator ? 'flex' : 'none';
+            });
+            
+            // Показываем/скрываем кнопки в таблице
+            document.querySelectorAll('.flights-table button').forEach(button => {
+                button.style.display = isOperator ? 'inline-flex' : 'none';
+            });
+        }
+        
         // Заполнение таблицы рейсами
         function renderFlights() {
             const tbody = document.getElementById('flights-tbody');
@@ -830,6 +1063,7 @@
                     <td>${flight.route}</td>
                     <td>${flight.stops || '-'}</td>
                     <td>${flight.departure}</td>
+                    <td><span class="flight-duration">${flight.duration}</span></td>
                     <td>${flight.days.join(', ')}</td>
                     <td>${flight.price.toLocaleString('ru-RU')} руб.</td>
                     <td><span class="free-seats ${seatsClass}">${flight.seats} мест</span></td>
@@ -837,7 +1071,7 @@
                         <button class="btn btn-primary" onclick="editFlight(${flight.id})" style="padding: 5px 10px; font-size: 0.8rem;">
                             <i class="fas fa-edit"></i>
                         </button>
-                        <button class="btn btn-secondary" onclick="deleteFlight(${flight.id})" style="padding: 5px 10px; font-size: 0.8rem; margin-left: 5px;">
+                        <button class="btn btn-danger" onclick="deleteFlight(${flight.id})" style="padding: 5px 10px; font-size: 0.8rem; margin-left: 5px;">
                             <i class="fas fa-trash"></i>
                         </button>
                     </td>
@@ -852,6 +1086,9 @@
             // Подсчет рейсов на сегодня (для примера)
             const todayFlights = flights.filter(f => f.days.includes(getCurrentDayShort())).length;
             document.getElementById('today-flights').textContent = todayFlights;
+            
+            // Обновляем видимость кнопок в зависимости от роли
+            updateUIForUserRole();
         }
         
         // Получение сокращенного названия текущего дня
@@ -866,7 +1103,8 @@
             const searchInput = document.getElementById('search-input').value.toLowerCase();
             const filteredFlights = flights.filter(flight => 
                 flight.number.toLowerCase().includes(searchInput) || 
-                flight.departure.includes(searchInput)
+                flight.departure.includes(searchInput) ||
+                flight.route.toLowerCase().includes(searchInput)
             );
             
             if (filteredFlights.length === 0 && searchInput !== '') {
@@ -889,6 +1127,16 @@
                 flights.sort((a, b) => a.route.localeCompare(b.route));
             } else if (sortBy === 'price') {
                 flights.sort((a, b) => a.price - b.price);
+            } else if (sortBy === 'duration') {
+                // Преобразуем "2ч 30м" в минуты для сортировки
+                flights.sort((a, b) => {
+                    const getMinutes = (duration) => {
+                        const hours = parseInt(duration) || 0;
+                        const minutes = parseInt(duration.split(' ')[1]) || 0;
+                        return hours * 60 + minutes;
+                    };
+                    return getMinutes(a.duration) - getMinutes(b.duration);
+                });
             }
             
             renderFlights();
@@ -896,12 +1144,18 @@
         
         // Открытие модального окна для добавления рейса
         function openAddModal() {
+            if (currentUser.role === 'Пользователь') {
+                alert('У вас нет прав для добавления рейсов');
+                return;
+            }
+            
             editingFlightId = null;
             document.getElementById('modal-title').textContent = 'Добавление нового рейса';
             document.getElementById('flight-form').reset();
             
             // Установка значений по умолчанию
             document.getElementById('departure-time').value = "08:30";
+            document.getElementById('duration').value = "2ч 30м";
             document.getElementById('price').value = "8500";
             document.getElementById('seats').value = "12";
             
@@ -910,6 +1164,11 @@
         
         // Открытие модального окна для редактирования рейса
         function editFlight(id) {
+            if (currentUser.role === 'Пользователь') {
+                alert('У вас нет прав для редактирования рейсов');
+                return;
+            }
+            
             const flight = flights.find(f => f.id === id);
             if (!flight) return;
             
@@ -921,6 +1180,7 @@
             document.getElementById('route').value = flight.route;
             document.getElementById('stops').value = flight.stops || '';
             document.getElementById('departure-time').value = flight.departure;
+            document.getElementById('duration').value = flight.duration;
             document.getElementById('price').value = flight.price;
             document.getElementById('seats').value = flight.seats;
             
@@ -935,6 +1195,11 @@
         
         // Удаление рейса
         function deleteFlight(id) {
+            if (currentUser.role === 'Пользователь') {
+                alert('У вас нет прав для удаления рейсов');
+                return;
+            }
+            
             if (confirm('Вы уверены, что хотите удалить этот рейс?')) {
                 flights = flights.filter(f => f.id !== id);
                 renderFlights();
@@ -945,6 +1210,11 @@
         function saveFlight(event) {
             event.preventDefault();
             
+            if (currentUser.role === 'Пользователь') {
+                alert('У вас нет прав для сохранения рейсов');
+                return;
+            }
+            
             // Получение данных из формы
             const flightData = {
                 id: editingFlightId || flights.length > 0 ? Math.max(...flights.map(f => f.id)) + 1 : 1,
@@ -952,6 +1222,7 @@
                 route: document.getElementById('route').value,
                 stops: document.getElementById('stops').value,
                 departure: document.getElementById('departure-time').value,
+                duration: document.getElementById('duration').value,
                 days: Array.from(document.getElementById('days').selectedOptions).map(opt => opt.value),
                 price: parseInt(document.getElementById('price').value),
                 seats: parseInt(document.getElementById('seats').value)
@@ -998,7 +1269,7 @@
                 boardingList.style.display = 'none';
                 flightsTable.style.display = 'table';
                 controls.style.display = 'flex';
-                document.querySelector('.section-title').innerHTML = '<i class="fas fa-plane-departure"></i> Расписание рейсов Аэрофлота';
+                document.querySelector('.section-title').innerHTML = '<i class="fas fa-plane-departure"></i> Расписание рейсов';
             }
         }
         
@@ -1027,18 +1298,28 @@
             boardingList.style.display = 'none';
             flightsTable.style.display = 'table';
             controls.style.display = 'flex';
-            document.querySelector('.section-title').innerHTML = '<i class="fas fa-plane-departure"></i> Расписание рейсов Аэрофлота';
+            document.querySelector('.section-title').innerHTML = '<i class="fas fa-plane-departure"></i> Расписание рейсов';
         }
         
         // Инициализация при загрузке страницы
         document.addEventListener('DOMContentLoaded', () => {
-            // Устанавливаем актуальные даты
-            updateDates();
+            // Обработка формы входа
+            document.getElementById('login-form').addEventListener('submit', (e) => {
+                e.preventDefault();
+                const username = document.getElementById('username').value;
+                const password = document.getElementById('password').value;
+                
+                if (login(username, password)) {
+                    // Успешный вход
+                } else {
+                    alert('Неверное имя пользователя или пароль');
+                }
+            });
             
-            // Рендерим рейсы
-            renderFlights();
+            // Обработка выхода
+            document.getElementById('logout-btn').addEventListener('click', logout);
             
-            // Назначение обработчиков событий
+            // Назначение обработчиков событий в системе
             document.getElementById('add-flight-btn').addEventListener('click', openAddModal);
             document.getElementById('search-btn').addEventListener('click', searchFlights);
             document.getElementById('sort-btn').addEventListener('click', sortFlights);
